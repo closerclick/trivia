@@ -1,0 +1,8 @@
+# Solo la cáscara pública de la herramienta es indexable.
+# Las trivias del usuario (JSON de preguntas, imágenes, config) viven en su
+# navegador / store.closer.click y viajan por #fragment; nunca llegan al servidor
+# ni son indexables, y así debe seguir.
+User-agent: *
+Allow: /
+
+Sitemap: https://trivia.closer.click/sitemap.xml
