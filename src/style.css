@@ -43,6 +43,8 @@ body.mode-play .bg-layer::after { content: ""; position: absolute; inset: 0; bac
 .brand-logo { width: 28px; height: 28px; border-radius: 7px; display: block; }
 .brand span { font-weight: 800; letter-spacing: .02em; font-size: 18px; }
 .spacer { flex: 1; }
+/* moneda de support dentro de la topbar, a la derecha (como en las demás apps) */
+.topbar-coin { flex: 0 0 auto; display: flex; align-items: center; padding-left: 4px; }
 
 /* ---- botones ---- */
 .btn {
@@ -169,12 +171,17 @@ body.mode-play .score-ring::before { background: color-mix(in srgb, var(--surfac
 .score-num { position: relative; font-size: 54px; font-weight: 900; line-height: 1; }
 .score-of { position: relative; font-size: 16px; color: var(--muted); font-weight: 700; }
 
-.play-back {
+/* engrane para entrar al modo edición desde el juego (arriba a la izquierda;
+   la moneda flotante ocupa la derecha) */
+.play-gear {
   position: fixed; left: calc(env(safe-area-inset-left) + 12px); top: calc(env(safe-area-inset-top) + 12px);
-  z-index: 5; background: color-mix(in srgb, var(--surface) 80%, transparent); border: 1px solid var(--border);
-  color: var(--text); border-radius: 10px; padding: 8px 13px; font-weight: 700; font-size: 14px; cursor: pointer;
-  backdrop-filter: blur(6px); font-family: inherit;
+  z-index: 5; display: inline-flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px; background: color-mix(in srgb, var(--surface) 80%, transparent);
+  border: 1px solid var(--border); color: var(--text); border-radius: 11px; cursor: pointer;
+  backdrop-filter: blur(6px); font-family: inherit; transition: transform .06s, background .2s;
 }
+.play-gear:hover { background: color-mix(in srgb, var(--text) 10%, var(--surface)); }
+.play-gear:active { transform: translateY(1px); }
 
 /* ---- modal ---- */
 .modal { position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.7); display: flex; align-items: center; justify-content: center; padding: 4vh 4vw; }

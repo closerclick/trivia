@@ -166,15 +166,13 @@ function openPromptModal(cfg) {
   const lang = getLang();
   const topic = h('input', { class: 'input', type: 'text', placeholder: t('topicPh') });
   const count = h('input', { class: 'input num', type: 'number', min: '1', max: '100', value: '10' });
-  const incl = h('input', { type: 'checkbox', checked: true });
   const out = h('textarea', { class: 'input textarea code', rows: '12', readonly: true });
 
   function regen() {
-    out.value = generatePrompt({ topic: topic.value, count: count.value, lang, includeBoolean: incl.checked });
+    out.value = generatePrompt({ topic: topic.value, count: count.value, lang });
   }
   topic.addEventListener('input', regen);
   count.addEventListener('input', regen);
-  incl.addEventListener('change', regen);
   regen();
 
   const copyBtn = h('button', { class: 'btn btn-primary', onclick: async () => {
@@ -193,9 +191,6 @@ function openPromptModal(cfg) {
         h('div', { class: 'prompt-grid' },
           field('topic', topic),
           field('howMany', count)),
-        h('label', { class: 'switch-row' },
-          h('span', {}, t('includeTF')),
-          h('span', { class: 'switch' }, incl, h('span', { class: 'slider' }))),
         out,
       ),
       h('div', { class: 'modal-foot' }, copyBtn,

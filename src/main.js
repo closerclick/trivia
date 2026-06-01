@@ -7,8 +7,10 @@ import { loadConfig, saveConfig, resolveAsset } from './store.js';
 import { parseSharedConfig, buildShareLink } from './share.js';
 import { renderEditor } from './editor.js';
 import { renderPlay } from './play.js';
+import { getUiMode, setUiMode } from './playstate.js';
 
 const BRAND = 'Trivia';
+const ICON_GEAR = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
 const app = document.getElementById('app');
 
 let cfg = defaultConfig();
@@ -19,9 +21,23 @@ const topbar = h('header', { class: 'topbar' });
 const view = h('main', { class: 'view' });
 const toast = h('div', { class: 'toast' });
 const support = h('closer-click-support', {
+  class: 'topbar-coin',
   href: 'https://ko-fi.com/closerclick', repo: 'closerclick/trivia', discord: 'https://discord.gg/D648uq7cth',
 });
-clear(app).append(bgLayer, topbar, view, support, toast);
+clear(app).append(bgLayer, topbar, view, toast);
+
+// La moneda de support vive en la topbar (a la derecha, como en las demás apps)
+// durante el modo edición; en modo juego (sin topbar) flota arriba a la derecha.
+function coinInTopbar() {
+  support.removeAttribute('floating');
+  support.className = 'topbar-coin';
+  topbar.append(support);
+}
+function coinFloating() {
+  support.className = '';
+  support.setAttribute('floating', '');
+  app.append(support);
+}
 
 // ---- tema (paleta + fondos) ----
 async function applyTheme(c) {
@@ -64,10 +80,12 @@ function renderTopbar() {
     h('button', { class: 'btn btn-soft', onclick: () => showPlay({ published: false }) }, t('play')),
     h('button', { class: 'btn btn-primary', onclick: doPublish }, t('publish')),
   );
+  coinInTopbar();
   wireInstall();
 }
 
 function showEditor() {
+  setUiMode('edit');
   document.body.classList.remove('mode-play');
   topbar.style.display = '';
   renderTopbar();
@@ -77,8 +95,10 @@ function showEditor() {
 
 async function showPlay({ published, playCfg }) {
   const c = playCfg || cfg;
+  if (!published) setUiMode('play');
   document.body.classList.add('mode-play');
   topbar.style.display = 'none';
+  coinFloating();
   await applyTheme(c);
   const images = { logo: await resolvedLogo(c) };
   clear(view).append(renderPlay(c, {
@@ -88,7 +108,8 @@ async function showPlay({ published, playCfg }) {
     onExit: () => showEditor(),
   }));
   if (!published) {
-    view.append(h('button', { class: 'play-back', title: t('backToEdit'), onclick: () => showEditor() }, '‹ ' + t('edit')));
+    // Engrane arriba a la izquierda → entrar al modo edición.
+    view.append(h('button', { class: 'play-gear', title: t('edit'), 'aria-label': t('edit'), onclick: () => showEditor(), html: ICON_GEAR }));
   }
 }
 
@@ -134,7 +155,10 @@ async function boot() {
   }
   const saved = await loadConfig();
   if (saved) cfg = mergeConfig(saved);
-  showEditor();
+  // Por defecto arranca en modo juego; un refresco respeta dónde estaba el
+  // usuario (juego o edición).
+  if (getUiMode() === 'edit') showEditor();
+  else await showPlay({ published: false });
 }
 boot();
 

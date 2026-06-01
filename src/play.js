@@ -3,21 +3,36 @@
 import { h, clear } from './dom.js';
 import { t } from './i18n.js';
 import { buildSession } from './state.js';
+import { configSig, loadPlay, savePlay } from './playstate.js';
 
 const ICON_CHECK = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 6L20 5"/></svg>';
 const ICON_X = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
 
 // opts: { published, onExit, images:{logo}, brandName }
 export function renderPlay(cfg, opts = {}) {
-  const session = buildSession(cfg);
   const flash = cfg.mode === 'flashcards';
   const root = h('div', { class: 'play' });
 
+  // Persistencia del progreso: sólo para la partida local (no publicada). Una
+  // trivia abierta por enlace publicado es efímera y no guarda progreso.
+  const persist = !opts.published;
+  const sig = configSig(cfg);
+  const restored = persist ? loadPlay(sig) : null;
+
+  // Reusar la sesión barajada guardada para que un refresco no rebaraje.
+  const session = restored ? restored.session : buildSession(cfg);
+
   let i = 0, score = 0;
+
+  function save(screen) {
+    if (!persist) return;
+    savePlay({ sig, screen, i, score, session });
+  }
 
   function go(node) { clear(root); root.append(node); root.scrollTop = 0; }
 
   function screenStart() {
+    save('start');
     const logo = opts.images && opts.images.logo;
     go(h('div', { class: 'screen start' },
       logo ? h('img', { class: 'play-logo', src: logo, alt: '' }) : null,
@@ -47,6 +62,7 @@ export function renderPlay(cfg, opts = {}) {
   function correctValue(q) { return q.answer; }
 
   function screenQuestion() {
+    save('question');
     const q = session[i];
     const opts2 = optionList(q);
     let answered = false;
@@ -116,6 +132,7 @@ export function renderPlay(cfg, opts = {}) {
   }
 
   function screenResult() {
+    save('result');
     const pct = session.length ? Math.round(score / session.length * 100) : 0;
     go(h('div', { class: 'screen result' },
       flash
@@ -142,6 +159,15 @@ export function renderPlay(cfg, opts = {}) {
     return h('button', { class: 'btn btn-ghost', onclick: () => opts.onExit && opts.onExit() }, t('backToEdit'));
   }
 
-  screenStart();
+  // Resumir donde quedó (refresco) o empezar limpio.
+  if (restored && restored.screen === 'question' && Number.isInteger(restored.i) && restored.i < session.length) {
+    i = restored.i; score = restored.score || 0;
+    screenQuestion();
+  } else if (restored && restored.screen === 'result') {
+    score = restored.score || 0;
+    screenResult();
+  } else {
+    screenStart();
+  }
   return root;
 }

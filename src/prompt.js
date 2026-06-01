@@ -1,5 +1,7 @@
 // Generador de prompt para pegar en una IA y obtener el JSON de preguntas.
-export function generatePrompt({ topic, count, lang, includeBoolean }) {
+// El tipo de cada pregunta ("multiple" o "boolean") se define POR PREGUNTA en su
+// JSON; no hay un modo global. El prompt documenta ambos para que la IA elija.
+export function generatePrompt({ topic, count, lang }) {
   const n = Math.max(1, Math.min(100, parseInt(count, 10) || 10));
   const tp = (topic || '').trim() || (lang === 'en' ? 'general knowledge' : 'cultura general');
 
@@ -16,20 +18,20 @@ Return ONLY valid JSON, no extra text, no markdown fences, with this exact shape
       "options": ["Option A", "Option B", "Option C", "Option D"],
       "answer": 0,
       "explanation": "Short explanation (optional)"
-    }${includeBoolean ? `,
+    },
     {
       "q": "A true/false statement",
       "type": "boolean",
       "answer": true,
       "explanation": "Optional"
-    }` : ''}
+    }
   ]
 }
 
 Rules:
-- "type": "multiple" → 3 or 4 entries in "options"; "answer" is the 0-based INDEX of the correct option.${includeBoolean ? `
-- "type": "boolean" → no "options"; "answer" is true or false.` : `
-- Use only "multiple" questions.`}
+- Each question sets its own "type": use "multiple" or "boolean" per question as fits the content.
+- "type": "multiple" → 3 or 4 entries in "options"; "answer" is the 0-based INDEX of the correct option.
+- "type": "boolean" → no "options"; "answer" is true or false.
 - Vary the position of the correct answer; exactly one correct answer per question.
 - Clear, unambiguous questions and concise options.
 - Write the questions in English.
@@ -48,20 +50,20 @@ Devolvé SOLO JSON válido, sin texto adicional, sin bloques de markdown, con es
       "options": ["Opción A", "Opción B", "Opción C", "Opción D"],
       "answer": 0,
       "explanation": "Explicación breve (opcional)"
-    }${includeBoolean ? `,
+    },
     {
       "q": "Una afirmación de verdadero o falso",
       "type": "boolean",
       "answer": true,
       "explanation": "Opcional"
-    }` : ''}
+    }
   ]
 }
 
 Reglas:
-- "type": "multiple" → 3 o 4 elementos en "options"; "answer" es el ÍNDICE (empezando en 0) de la opción correcta.${includeBoolean ? `
-- "type": "boolean" → sin "options"; "answer" es true o false.` : `
-- Usá solo preguntas de tipo "multiple".`}
+- Cada pregunta define su propio "type": usá "multiple" o "boolean" según convenga al contenido.
+- "type": "multiple" → 3 o 4 elementos en "options"; "answer" es el ÍNDICE (empezando en 0) de la opción correcta.
+- "type": "boolean" → sin "options"; "answer" es true o false.
 - Variá la posición de la respuesta correcta; exactamente una correcta por pregunta.
 - Preguntas claras y sin ambigüedad, opciones concisas.
 - Escribí las preguntas en español.
