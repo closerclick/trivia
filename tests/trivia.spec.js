@@ -45,7 +45,9 @@ test('juega un quiz hasta el resultado y muestra puntaje', async ({ page }) => {
   }
   await expect(page.locator('.score-ring')).toBeVisible()
   await expect(page.locator('.score-num')).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Jugar de nuevo' })).toBeVisible()
+  // Finalizar vuelve a la pantalla de bienvenida (con «Empezar»)
+  await page.getByRole('button', { name: 'Finalizar' }).click()
+  await expect(page.getByRole('button', { name: 'Empezar' })).toBeVisible()
 })
 
 test('modo flashcards revela la respuesta sin puntaje', async ({ page }) => {

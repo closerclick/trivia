@@ -164,7 +164,8 @@ body.mode-play .bg-layer::after { content: ""; position: absolute; inset: 0; bac
 .score-ring {
   width: 168px; height: 168px; border-radius: 50%;
   background: conic-gradient(var(--brand) calc(var(--pct) * 1%), var(--surface-2) 0);
-  display: grid; place-items: center; position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative;
 }
 .score-ring::before { content: ""; position: absolute; inset: 14px; background: var(--bg); border-radius: 50%; }
 body.mode-play .score-ring::before { background: color-mix(in srgb, var(--surface) 86%, transparent); }

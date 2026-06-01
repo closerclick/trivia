@@ -142,7 +142,9 @@ export function renderPlay(cfg, opts = {}) {
             h('div', { class: 'score-of' }, '/ ' + session.length)),
       flash ? null : h('p', { class: 'play-sub' }, t('yourScore') + ': ' + t('resultLine', { score, n: session.length })),
       h('div', { class: 'result-actions' },
-        h('button', { class: 'btn btn-primary', onclick: () => { i = 0; score = 0; screenQuestion(); } }, t('playAgain')),
+        // Finalizar: vuelve a la pantalla de bienvenida (desde ahí se puede
+        // volver a jugar con «Empezar» o editar con el engrane).
+        h('button', { class: 'btn btn-primary', onclick: () => { i = 0; score = 0; screenStart(); } }, t('endGame')),
         exitButton(),
       ),
     ));
