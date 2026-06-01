@@ -73,12 +73,13 @@ function svgIcon() {
 
 function renderTopbar() {
   clear(topbar).append(
+    // Engrane arriba a la izquierda: toggle a modo juego (mismo lugar que el de
+    // la pantalla de juego, que vuelve a edición).
+    h('button', { class: 'btn btn-ghost icon-btn', title: t('play'), 'aria-label': t('play'), onclick: () => showPlay({ published: false }), html: ICON_GEAR }),
     h('div', { class: 'brand' }, svgIcon(), h('span', {}, BRAND)),
     h('div', { class: 'spacer' }),
     h('button', { class: 'btn btn-ghost sm', title: 'es/en', onclick: () => { toggleLang(); showEditor(); } }, getLang() === 'es' ? 'EN' : 'ES'),
     h('button', { class: 'btn btn-ghost sm install', id: 'btnInstall', style: { display: 'none' } }, t('install')),
-    h('button', { class: 'btn btn-soft', onclick: () => showPlay({ published: false }) }, t('play')),
-    h('button', { class: 'btn btn-primary', onclick: doPublish }, t('publish')),
   );
   coinInTopbar();
   wireInstall();

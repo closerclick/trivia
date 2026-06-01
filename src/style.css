@@ -55,6 +55,7 @@ body.mode-play .bg-layer::after { content: ""; position: absolute; inset: 0; bac
 }
 .btn:active { transform: translateY(1px); }
 .btn.sm { padding: 7px 11px; font-size: 13px; border-radius: 9px; }
+.btn.icon-btn { padding: 0; width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
 .btn-lg { padding: 15px 28px; font-size: 18px; }
 .btn-primary { background: var(--brand); color: var(--on-brand); }
 .btn-primary:hover { filter: brightness(1.07); }
