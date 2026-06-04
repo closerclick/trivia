@@ -4,12 +4,12 @@ const DICT = {
   es: {
     play: 'Jugar', publish: 'Publicar', edit: 'Editar', install: 'Instalar',
     copyLink: 'Copiar enlace', linkCopied: '¡Enlace copiado!',
-    linkDropped: 'Enlace copiado (las imágenes subidas no se incluyen; usá URLs para compartirlas).',
+    linkDropped: 'Enlace copiado (las imágenes subidas no se incluyen; usa URLs para compartirlas).',
 
     secContent: 'Preguntas', secAppearance: 'Apariencia', secGame: 'Juego',
 
     title: 'Título de la trivia', titlePh: 'Mi trivia',
-    jsonLabel: 'JSON de preguntas', jsonPh: 'Pegá aquí el JSON de preguntas…',
+    jsonLabel: 'JSON de preguntas', jsonPh: 'Pega aquí el JSON de preguntas…',
     genPrompt: 'Generar prompt para IA', loadSample: 'Cargar ejemplo', clear: 'Vaciar',
     validCount: '{n} pregunta(s) válida(s)', invalidJson: 'JSON inválido: {err}',
     noQuestions: 'Sin preguntas todavía',
@@ -17,7 +17,7 @@ const DICT = {
     color: 'Color principal', theme: 'Tema', dark: 'Oscuro', light: 'Claro',
     logo: 'Logo', bgWeb: 'Fondo (web)', bgMobile: 'Fondo (móvil)',
     imgUrlPh: 'URL de imagen (https://…)', upload: 'Subir', remove: 'Quitar',
-    uploadHint: 'Las imágenes subidas se guardan en tu store (local a tu navegador). Para que se vean al compartir el enlace, usá una URL.',
+    uploadHint: 'Las imágenes subidas se guardan en tu store (local a tu navegador). Para que se vean al compartir el enlace, usa una URL.',
 
     gameMode: 'Modo de juego', modeQuiz: 'Quiz (puntaje)', modeFlash: 'Flashcards',
     modeQuizDesc: 'Opción múltiple y verdadero/falso con puntaje.',
@@ -31,12 +31,12 @@ const DICT = {
     correct: '¡Correcto!', incorrect: 'Incorrecto',
     yourScore: 'Tu puntaje', resultLine: '{score} de {n}', done: '¡Listo!',
     playAgain: 'Jugar de nuevo', endGame: 'Finalizar', backToEdit: 'Volver a editar',
-    makeYours: 'Creá tu propia trivia',
+    makeYours: 'Crea tu propia trivia',
     tTrue: 'Verdadero', tFalse: 'Falso',
     noQuestionsPlay: 'Esta trivia no tiene preguntas.',
 
     promptTitle: 'Prompt para generar el JSON con IA',
-    promptIntro: 'Ajustá el tema y la cantidad, copiá el prompt y pegalo en tu IA preferida. Te devolverá el JSON; pegalo en «JSON de preguntas».',
+    promptIntro: 'Ajusta el tema y la cantidad, copia el prompt y pégalo en tu IA preferida. Te devolverá el JSON; pégalo en «JSON de preguntas».',
     topic: 'Tema', howMany: 'Cantidad', includeTF: 'Incluir verdadero/falso',
     copy: 'Copiar', copied: '¡Copiado!', close: 'Cerrar',
     topicPh: 'Capitales del mundo',

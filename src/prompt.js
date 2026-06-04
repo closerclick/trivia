@@ -38,8 +38,8 @@ Rules:
 - Output the ${n} questions inside "questions".`;
   }
 
-  return `Generá una trivia sobre "${tp}" con ${n} preguntas.
-Devolvé SOLO JSON válido, sin texto adicional, sin bloques de markdown, con esta forma exacta:
+  return `Genera una trivia sobre "${tp}" con ${n} preguntas.
+Devuelve SOLO JSON válido, sin texto adicional, sin bloques de markdown, con esta forma exacta:
 
 {
   "title": "Título de la trivia",
@@ -61,11 +61,11 @@ Devolvé SOLO JSON válido, sin texto adicional, sin bloques de markdown, con es
 }
 
 Reglas:
-- Cada pregunta define su propio "type": usá "multiple" o "boolean" según convenga al contenido.
+- Cada pregunta define su propio "type": usa "multiple" o "boolean" según convenga al contenido.
 - "type": "multiple" → 3 o 4 elementos en "options"; "answer" es el ÍNDICE (empezando en 0) de la opción correcta.
 - "type": "boolean" → sin "options"; "answer" es true o false.
-- Variá la posición de la respuesta correcta; exactamente una correcta por pregunta.
+- Varía la posición de la respuesta correcta; exactamente una correcta por pregunta.
 - Preguntas claras y sin ambigüedad, opciones concisas.
-- Escribí las preguntas en español.
-- Generá las ${n} preguntas dentro de "questions".`;
+- Escribe las preguntas en español.
+- Genera las ${n} preguntas dentro de "questions".`;
 }
