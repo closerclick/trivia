@@ -13,9 +13,10 @@ import { createBackNav } from '@closerclick/closer-click-nav';
 // Navegación "volver" unificada del ecosistema (registra <closer-click-back> y
 // captura el botón físico de Android / gesto de iOS / atrás del navegador).
 const nav = createBackNav();
-// El modo juego (no publicado) es una "capa" sobre el editor: volver regresa al
-// editor. En el editor (sin capa) volver va a la página anterior / closer.click.
-let playLayer = null;
+// El JUEGO es el home; la EDICIÓN es una "capa" sobre él: en edición, volver
+// (físico/chevron) regresa al juego. En el juego (sin capa) volver va a
+// closer.click.
+let editLayer = null;
 
 const BRAND = 'Trivia';
 const ICON_GEAR = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
@@ -97,25 +98,23 @@ function renderTopbar() {
 }
 
 function showEditor() {
-  // Volver al editor cierra la capa "juego" (si la abrió el botón físico de
-  // volver, ya está cerrada y esto es un no-op seguro).
-  if (playLayer) { const l = playLayer; playLayer = null; l.close(); }
   setUiMode('edit');
   document.body.classList.remove('mode-play');
   topbar.style.display = '';
   renderTopbar();
   clear(view).append(renderEditor(cfg, commit));
   applyTheme(cfg);
+  // La edición es una capa sobre el juego: volver (físico/chevron) regresa al
+  // juego en vez de salir del sitio.
+  if (!editLayer) editLayer = nav.open(() => showPlay({ published: false }));
 }
 
 async function showPlay({ published, playCfg }) {
+  // Volver al juego cierra la capa de edición (si fue el botón físico, ya está
+  // cerrada y esto es un no-op seguro).
+  if (editLayer) { const l = editLayer; editLayer = null; l.close(); }
   const c = playCfg || cfg;
-  if (!published) {
-    setUiMode('play');
-    // Capa sobre el editor: volver (físico/chevron) regresa al editor. El visor
-    // publicado (sin editor detrás) no abre capa: volver va a closer.click.
-    if (!playLayer) playLayer = nav.open(() => showEditor());
-  }
+  if (!published) setUiMode('play');
   document.body.classList.add('mode-play');
   topbar.style.display = 'none';
   coinFloating();
@@ -127,8 +126,14 @@ async function showPlay({ published, playCfg }) {
     brandName: BRAND,
     onExit: () => showEditor(),
   }));
+  // Chevron de volver flotante arriba-izquierda: el juego es el home, así que
+  // volver va a closer.click. En modo editable queda a la izquierda del engrane.
+  view.append(h('closer-click-back', {
+    floating: '', class: 'play-back', lang: getLang(),
+    style: 'top:calc(env(safe-area-inset-top) + 12px);left:calc(env(safe-area-inset-left) + 12px);color:var(--text);--cc-back-size:42px;--cc-back-radius:11px;--cc-back-bg:color-mix(in srgb, var(--surface) 80%, transparent);--cc-back-bg-hover:color-mix(in srgb, var(--text) 10%, var(--surface))'
+  }));
   if (!published) {
-    // Engrane arriba a la izquierda → entrar al modo edición.
+    // Engrane a la derecha del chevron → entrar al modo edición.
     view.append(h('button', { class: 'play-gear', title: t('edit'), 'aria-label': t('edit'), onclick: () => showEditor(), html: ICON_GEAR }));
   }
 }

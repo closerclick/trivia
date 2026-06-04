@@ -178,7 +178,7 @@ body.mode-play .score-ring::before { background: color-mix(in srgb, var(--surfac
 /* engrane para entrar al modo edición desde el juego (arriba a la izquierda;
    la moneda flotante ocupa la derecha) */
 .play-gear {
-  position: fixed; left: calc(env(safe-area-inset-left) + 12px); top: calc(env(safe-area-inset-top) + 12px);
+  position: fixed; left: calc(env(safe-area-inset-left) + 62px); top: calc(env(safe-area-inset-top) + 12px);
   z-index: 5; display: inline-flex; align-items: center; justify-content: center;
   width: 42px; height: 42px; background: color-mix(in srgb, var(--surface) 80%, transparent);
   border: 1px solid var(--border); color: var(--text); border-radius: 11px; cursor: pointer;
