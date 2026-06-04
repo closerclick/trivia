@@ -8,6 +8,14 @@ import { parseSharedConfig, buildShareLink } from './share.js';
 import { renderEditor } from './editor.js';
 import { renderPlay } from './play.js';
 import { getUiMode, setUiMode } from './playstate.js';
+import { createBackNav } from '@closerclick/closer-click-nav';
+
+// Navegación "volver" unificada del ecosistema (registra <closer-click-back> y
+// captura el botón físico de Android / gesto de iOS / atrás del navegador).
+const nav = createBackNav();
+// El modo juego (no publicado) es una "capa" sobre el editor: volver regresa al
+// editor. En el editor (sin capa) volver va a la página anterior / closer.click.
+let playLayer = null;
 
 const BRAND = 'Trivia';
 const ICON_GEAR = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
@@ -73,8 +81,11 @@ function svgIcon() {
 
 function renderTopbar() {
   clear(topbar).append(
-    // Engrane arriba a la izquierda: toggle a modo juego (mismo lugar que el de
-    // la pantalla de juego, que vuelve a edición).
+    // Chevron de volver arriba a la izquierda (estándar del ecosistema): sin
+    // capa interna lleva a la página anterior / closer.click.
+    h('closer-click-back', { class: 'cc-back', lang: getLang() }),
+    // Engrane: toggle a modo juego (mismo lugar que el de la pantalla de juego,
+    // que vuelve a edición).
     h('button', { class: 'btn btn-ghost icon-btn', title: t('play'), 'aria-label': t('play'), onclick: () => showPlay({ published: false }), html: ICON_GEAR }),
     h('div', { class: 'brand' }, svgIcon(), h('span', {}, BRAND)),
     h('div', { class: 'spacer' }),
@@ -86,6 +97,9 @@ function renderTopbar() {
 }
 
 function showEditor() {
+  // Volver al editor cierra la capa "juego" (si la abrió el botón físico de
+  // volver, ya está cerrada y esto es un no-op seguro).
+  if (playLayer) { const l = playLayer; playLayer = null; l.close(); }
   setUiMode('edit');
   document.body.classList.remove('mode-play');
   topbar.style.display = '';
@@ -96,7 +110,12 @@ function showEditor() {
 
 async function showPlay({ published, playCfg }) {
   const c = playCfg || cfg;
-  if (!published) setUiMode('play');
+  if (!published) {
+    setUiMode('play');
+    // Capa sobre el editor: volver (físico/chevron) regresa al editor. El visor
+    // publicado (sin editor detrás) no abre capa: volver va a closer.click.
+    if (!playLayer) playLayer = nav.open(() => showEditor());
+  }
   document.body.classList.add('mode-play');
   topbar.style.display = 'none';
   coinFloating();

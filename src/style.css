@@ -39,6 +39,8 @@ body.mode-play .bg-layer::after { content: ""; position: absolute; inset: 0; bac
   border-bottom: 1px solid var(--border);
   position: sticky; top: 0; backdrop-filter: blur(8px);
 }
+/* Chevron de volver (Web Component @closerclick/closer-click-nav). */
+.cc-back { color: var(--text); --cc-back-size: 38px; --cc-back-bg-hover: color-mix(in srgb, var(--text) 8%, transparent); margin-left: -4px; }
 .brand { display: flex; align-items: center; gap: 9px; }
 .brand-logo { width: 28px; height: 28px; border-radius: 7px; display: block; }
 .brand span { font-weight: 800; letter-spacing: .02em; font-size: 18px; }
